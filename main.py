@@ -1,7 +1,7 @@
 import pygame as pg
 import sys
 
-import utilities as u
+import helpers as h
 
 pg.init()
 size = width, height = 600, 700
@@ -17,7 +17,7 @@ mediumFont = pg.font.Font("OpenSans-Regular.ttf", 28)
 largeFont = pg.font.Font("OpenSans-Regular.ttf", 40)
 moveFont = pg.font.Font("OpenSans-Regular.ttf", 60)
 
-board = u.initial_state()
+board = h.initial_state()
 
 while True:
     for event in pg.event.get():
