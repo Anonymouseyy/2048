@@ -9,14 +9,29 @@ def empty_state():
             [0, 0, 0, 0]]
 
 
+def get_empty_spaces(board):
+    empty = []
+
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            if not board[i][j]:
+                empty.append((i, j))
+
+    return empty
+
+
+def insert_random(board, valids):
+    empty = get_empty_spaces(board)
+    i, j = random.choice(empty)
+    board[i][j] = random.choice(valids)
+    return board
+
+
 def initial_state():
     board = empty_state()
-    valid_start = [2, 4, 2048]
+    valid_start = [2, 2, 2, 4]
 
-    j, k = random.randint(0, 1), random.randint(0, 3)
-    board[j][k] = random.choice(valid_start)
-
-    j, k = random.randint(2, 3), random.randint(0, 3)
-    board[j][k] = random.choice(valid_start)
+    for _ in range(2):
+        board = insert_random(board, valid_start)
 
     return board
