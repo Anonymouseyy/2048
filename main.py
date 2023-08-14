@@ -1,5 +1,5 @@
 import pygame as pg
-import sys
+import sys, copy
 
 import helpers as h
 
@@ -47,8 +47,8 @@ def draw_board():
     for row_num, row in enumerate(board):
         for spot_num, spot in enumerate(row):
             spot_rect = pg.Rect(0, 0, 0.23*dim, 0.23*dim)
-            spot_rect.topleft = (board_back.topleft[0]+(row_num*(0.246*dim)+(0.016*dim)),
-                                 board_back.topleft[1]+(spot_num*(0.246*dim)+(0.016*dim)))
+            spot_rect.topleft = (board_back.topleft[0]+(spot_num*(0.246*dim)+(0.016*dim)),
+                                 board_back.topleft[1]+(row_num*(0.246*dim)+(0.016*dim)))
             tile_color = tile_colors[spot] if spot in tile_colors else (60, 58, 50)
             pg.draw.rect(screen, tile_color, spot_rect, border_radius=5)
 
@@ -63,6 +63,30 @@ while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             sys.exit()
+
+        if event.type == pg.KEYDOWN:
+            c_board = None
+
+            if event.key == pg.K_w or event.key == pg.K_UP:
+                c_board = copy.deepcopy(board)
+                pass
+
+            if event.key == pg.K_s or event.key == pg.K_DOWN:
+                c_board = copy.deepcopy(board)
+                pass
+
+            if event.key == pg.K_a or event.key == pg.K_LEFT:
+                c_board = copy.deepcopy(board)
+
+                board = h.move_left(board)
+
+            if event.key == pg.K_d or event.key == pg.K_RIGHT:
+                c_board = copy.deepcopy(board)
+
+                board = h.move_right(board)
+
+            if c_board != board:
+                board = h.insert_random(board)
 
     width, height = screen.get_size()
     screen.fill(bg_gray)
