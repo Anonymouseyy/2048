@@ -29,18 +29,17 @@ empty_color = (205, 193, 180)
 screen = pg.display.set_mode((width, height), pg.RESIZABLE)
 pg.display.set_caption('2048')
 
-mediumFont = pg.font.Font("OpenSans-Regular.ttf", 28)
-largeFont = pg.font.Font("OpenSans-Regular.ttf", 40)
-moveFont = pg.font.Font("OpenSans-Regular.ttf", 60)
+moveFont = pg.font.Font("OpenSans-Regular.ttf", 40)
+moveFont.bold = True
 
 board = h.initial_state()
 
 
 def draw_board():
-    global board, screen, board_color
+    global board, screen, board_color, score
 
     dim = min((5*width)/6, (5*height)/7)
-    board_back = pg.Rect(0, 0, dim ,dim)
+    board_back = pg.Rect(0, 0, dim, dim)
     board_back.center = (width//2, height//2+(5*height)/70)
     pg.draw.rect(screen, board_color, board_back, border_radius=10)
 
@@ -53,7 +52,7 @@ def draw_board():
             pg.draw.rect(screen, tile_color, spot_rect, border_radius=5)
 
             if not spot == 0:
-                num = largeFont.render(f'{spot}', True, (34, 34, 34) if spot == 2 or spot == 4 else (249, 246, 242))
+                num = moveFont.render(f'{spot}', True, (34, 34, 34) if spot == 2 or spot == 4 else (249, 246, 242))
                 num_rect = num.get_rect()
                 num_rect.center = spot_rect.center
                 screen.blit(num, num_rect)
@@ -69,11 +68,13 @@ while True:
 
             if event.key == pg.K_w or event.key == pg.K_UP:
                 c_board = copy.deepcopy(board)
-                pass
+
+                board = h.move_up(board)
 
             if event.key == pg.K_s or event.key == pg.K_DOWN:
                 c_board = copy.deepcopy(board)
-                pass
+
+                board = h.move_down(board)
 
             if event.key == pg.K_a or event.key == pg.K_LEFT:
                 c_board = copy.deepcopy(board)

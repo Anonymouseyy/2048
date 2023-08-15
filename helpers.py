@@ -39,33 +39,74 @@ def initial_state():
     return board
 
 
-def move_right(board):
+def move_up(board):
     for i in range(len(board)):
-        row = board[i]
+        # Create list of column elements
+        col = [board[x][i] for x in range(len(board))]
 
-        if row.count(0) == len(row):
+        if col.count(0) == len(col):
             continue
 
-        # Move all elements to right
-        j = len(row)-1
-        while j >= 0:
-            if not row[j]:
-                row.pop(j)
-                row.insert(0, 0)
+        # Move all elements to the left
+        j = 0
+        while j <= len(col) - 1:
+            if not col[j]:
+                col.pop(j)
+                col.append(0)
 
-                if not any(row[:j + 1]):
+                if not any(col[j + 1:]):
+                    break
+            else:
+                j += 1
+
+        # Combine like elements
+        j = 0
+        while j <= len(col) - 2:
+            if col[j] == col[j + 1]:
+                col[j] += col[j]
+                col.pop(j + 1)
+                col.append(0)
+            j += 1
+
+        # Insert column into board
+        for j in range(len(board)):
+            board[j][i] = col[j]
+
+    return board
+
+
+def move_down(board):
+    for i in range(len(board)):
+        # Create list of column elements
+        col = [board[x][i] for x in range(len(board))]
+
+        if col.count(0) == len(col):
+            continue
+
+        # Move all elements to right of list (down)
+        j = len(col) - 1
+        while j >= 0:
+            if not col[j]:
+                col.pop(j)
+                col.insert(0, 0)
+
+                if not any(col[:j + 1]):
                     break
             else:
                 j -= 1
 
         # Combine like elements
-        j = len(row) - 1
+        j = len(col) - 1
         while j >= 1:
-            if row[j] == row[j-1]:
-                row[j] += row[j]
-                row.pop(j-1)
-                row.insert(0, 0)
+            if col[j] == col[j - 1]:
+                col[j] += col[j]
+                col.pop(j - 1)
+                col.insert(0, 0)
             j -= 1
+
+        # Insert column into board
+        for j in range(len(board)):
+            board[j][i] = col[j]
 
     return board
 
@@ -97,5 +138,36 @@ def move_left(board):
                 row.pop(j+1)
                 row.append(0)
             j += 1
+
+    return board
+
+
+def move_right(board):
+    for i in range(len(board)):
+        row = board[i]
+
+        if row.count(0) == len(row):
+            continue
+
+        # Move all elements to right
+        j = len(row)-1
+        while j >= 0:
+            if not row[j]:
+                row.pop(j)
+                row.insert(0, 0)
+
+                if not any(row[:j + 1]):
+                    break
+            else:
+                j -= 1
+
+        # Combine like elements
+        j = len(row) - 1
+        while j >= 1:
+            if row[j] == row[j-1]:
+                row[j] += row[j]
+                row.pop(j-1)
+                row.insert(0, 0)
+            j -= 1
 
     return board
