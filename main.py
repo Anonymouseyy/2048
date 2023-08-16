@@ -4,6 +4,7 @@ import sys, copy
 import helpers as h
 
 pg.init()
+clock = pg.time.Clock()
 width, height = 600, 700
 
 black = (0, 0, 0)
@@ -73,7 +74,7 @@ while True:
             sys.exit()
 
         if event.type == pg.KEYDOWN:
-            c_board = None
+            c_board = board
             points = None
 
             if event.key == pg.K_w or event.key == pg.K_UP:
@@ -100,8 +101,12 @@ while True:
                 board = h.insert_random(board)
                 score += points
 
+            if event.key == pg.K_r:
+                board, score = h.initial_state(), 0
+
     width, height = screen.get_size()
     screen.fill(bg_gray)
     draw_board()
 
+    clock.tick(60)
     pg.display.flip()
