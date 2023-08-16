@@ -25,6 +25,7 @@ tile_colors = {
     2048: (237, 194, 45)
 }
 empty_color = (205, 193, 180)
+score = 0
 
 screen = pg.display.set_mode((width, height), pg.RESIZABLE)
 pg.display.set_caption('2048')
@@ -51,11 +52,19 @@ def draw_board():
             tile_color = tile_colors[spot] if spot in tile_colors else (60, 58, 50)
             pg.draw.rect(screen, tile_color, spot_rect, border_radius=5)
 
-            if not spot == 0:
+            if spot:
                 num = moveFont.render(f'{spot}', True, (34, 34, 34) if spot == 2 or spot == 4 else (249, 246, 242))
                 num_rect = num.get_rect()
                 num_rect.center = spot_rect.center
                 screen.blit(num, num_rect)
+
+    score_back = pg.Rect(board_back.topleft[0], height/20, dim/3, height/10)
+    pg.draw.rect(screen, board_color, score_back, border_radius=10)
+
+    score_text = moveFont.render(f'{score}', True, (34, 34, 34))
+    score_text_rect = score_text.get_rect()
+    score_text_rect.center = score_back.center
+    screen.blit(score_text, score_text_rect)
 
 
 while True:
@@ -65,29 +74,31 @@ while True:
 
         if event.type == pg.KEYDOWN:
             c_board = None
+            points = None
 
             if event.key == pg.K_w or event.key == pg.K_UP:
                 c_board = copy.deepcopy(board)
 
-                board = h.move_up(board)
+                board, points = h.move_up(board)
 
             if event.key == pg.K_s or event.key == pg.K_DOWN:
                 c_board = copy.deepcopy(board)
 
-                board = h.move_down(board)
+                board, points = h.move_down(board)
 
             if event.key == pg.K_a or event.key == pg.K_LEFT:
                 c_board = copy.deepcopy(board)
 
-                board = h.move_left(board)
+                board, points = h.move_left(board)
 
             if event.key == pg.K_d or event.key == pg.K_RIGHT:
                 c_board = copy.deepcopy(board)
 
-                board = h.move_right(board)
+                board, points = h.move_right(board)
 
             if c_board != board:
                 board = h.insert_random(board)
+                score += points
 
     width, height = screen.get_size()
     screen.fill(bg_gray)

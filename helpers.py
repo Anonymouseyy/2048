@@ -40,6 +40,8 @@ def initial_state():
 
 
 def move_up(board):
+    points = 0
+
     for i in range(len(board)):
         # Create list of column elements
         col = [board[x][i] for x in range(len(board))]
@@ -63,6 +65,7 @@ def move_up(board):
         j = 0
         while j <= len(col) - 2:
             if col[j] == col[j + 1]:
+                points += 2*col[j]
                 col[j] += col[j]
                 col.pop(j + 1)
                 col.append(0)
@@ -72,10 +75,12 @@ def move_up(board):
         for j in range(len(board)):
             board[j][i] = col[j]
 
-    return board
+    return board, points
 
 
 def move_down(board):
+    points = 0
+
     for i in range(len(board)):
         # Create list of column elements
         col = [board[x][i] for x in range(len(board))]
@@ -99,6 +104,7 @@ def move_down(board):
         j = len(col) - 1
         while j >= 1:
             if col[j] == col[j - 1]:
+                points += 2*col[j]
                 col[j] += col[j]
                 col.pop(j - 1)
                 col.insert(0, 0)
@@ -108,10 +114,12 @@ def move_down(board):
         for j in range(len(board)):
             board[j][i] = col[j]
 
-    return board
+    return board, points
 
 
 def move_left(board):
+    points = 0
+
     for i in range(len(board)):
         row = board[i]
 
@@ -134,15 +142,18 @@ def move_left(board):
         j = 0
         while j <= len(row) - 2:
             if row[j] == row[j+1]:
+                points += 2*row[j]
                 row[j] += row[j]
                 row.pop(j+1)
                 row.append(0)
             j += 1
 
-    return board
+    return board, points
 
 
 def move_right(board):
+    points = 0
+
     for i in range(len(board)):
         row = board[i]
 
@@ -165,9 +176,10 @@ def move_right(board):
         j = len(row) - 1
         while j >= 1:
             if row[j] == row[j-1]:
+                points += 2*row[j]
                 row[j] += row[j]
                 row.pop(j-1)
                 row.insert(0, 0)
             j -= 1
 
-    return board
+    return board, points
