@@ -1,5 +1,5 @@
 import pygame as pg
-import sys, copy
+import sys, copy, time
 
 import helpers as h
 
@@ -32,6 +32,7 @@ screen = pg.display.set_mode((width, height), pg.RESIZABLE)
 pg.display.set_caption('2048')
 
 moveFont = pg.font.Font("OpenSans-Regular.ttf", 40)
+textFont = pg.font.Font("OpenSans-Regular.ttf", 40)
 moveFont.bold = True
 
 board = h.initial_state()
@@ -66,6 +67,15 @@ def draw_board():
     score_text_rect = score_text.get_rect()
     score_text_rect.center = score_back.center
     screen.blit(score_text, score_text_rect)
+
+    restart_button = pg.Rect(board_back.topright[0]-dim/3, height/20, dim/3, height/10)
+    restart = textFont.render("Restart", True, black)
+    restart_rect = restart.get_rect()
+    restart_rect.center = restart_button.center
+    pg.draw.rect(screen, (157, 143, 130) if restart_button.collidepoint(pg.mouse.get_pos()) else board_color, restart_button, border_radius=10)
+    screen.blit(restart, restart_rect)
+
+    return restart_button
 
 
 while True:
@@ -106,7 +116,14 @@ while True:
 
     width, height = screen.get_size()
     screen.fill(bg_gray)
-    draw_board()
+    restart_button = draw_board()
+
+    click, _, _ = pg.mouse.get_pressed()
+    if click == 1:
+        mouse = pg.mouse.get_pos()
+        if restart_button.collidepoint(mouse):
+            time.sleep(0.2)
+            board, score = h.initial_state(), 0
 
     clock.tick(60)
     pg.display.flip()
