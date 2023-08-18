@@ -145,8 +145,7 @@ while True:
                 lost = False
 
     width, height = screen.get_size()
-    if not lost:
-        lost = h.check_lost_state(board)
+    lost = h.check_lost_state(copy.deepcopy(board))
     screen.fill(bg_gray)
     restart_button = draw_board()
     lost_button = None

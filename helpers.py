@@ -191,4 +191,5 @@ def check_lost_state(board):
     if any([not all(r) for r in board]):
         return False
 
-    return move_up(board)[0] == board and move_down(board)[0] == board and move_left(board)[0] == board and move_right(board)[0] == board
+    c_board = copy.deepcopy(board)
+    return move_up(board)[0] == c_board and move_down(board)[0] == c_board and move_left(board)[0] == c_board and move_right(board)[0] == c_board
