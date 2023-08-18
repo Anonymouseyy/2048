@@ -36,11 +36,10 @@ textFont = pg.font.Font("OpenSans-Regular.ttf", 40)
 moveFont.bold = True
 
 board = h.initial_state()
+lost = False
 
 
 def draw_board():
-    global board, screen, board_color, score
-
     dim = min((5*width)/6, (5*height)/7)
     board_back = pg.Rect(0, 0, dim, dim)
     board_back.center = (width//2, height//2+(5*height)/70)
@@ -78,6 +77,36 @@ def draw_board():
     return restart_button
 
 
+def lost_display():
+    dim = min((5 * width) / 6, (5 * height) / 7)
+    overlay = pg.Surface((dim, dim))
+    overlay.set_alpha(128)
+    overlay.fill((0, 0, 0))
+    screen.blit(overlay, ((width//2)-dim/2, height//2+(5*height)/70-dim/2))
+
+    lost_back = pg.Rect(0, 0, dim / 2, height / 10)
+    lost_back.center = (width // 2, height // 2)
+    lost_back.y += height / 8
+    pg.draw.rect(screen, board_color, lost_back, border_radius=10)
+
+    lost_text = textFont.render('Game Over', True, (34, 34, 34))
+    lost_text_rect = lost_text.get_rect()
+    lost_text_rect.center = lost_back.center
+    screen.blit(lost_text, lost_text_rect)
+
+    retry_button = pg.Rect(0, 0, dim / 2.5, height / 10)
+    retry_button.center = lost_text_rect.center
+    retry_button.y -= height / 8
+    retry = textFont.render("Try Again", True, black)
+    retry_rect = retry.get_rect()
+    retry_rect.center = retry_button.center
+    pg.draw.rect(screen, (157, 143, 130) if retry_button.collidepoint(pg.mouse.get_pos()) else board_color,
+                 retry_button, border_radius=10)
+    screen.blit(retry, retry_rect)
+
+    return retry_button
+
+
 while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -87,22 +116,22 @@ while True:
             c_board = board
             points = None
 
-            if event.key == pg.K_w or event.key == pg.K_UP:
+            if event.key == pg.K_w or event.key == pg.K_UP and not lost:
                 c_board = copy.deepcopy(board)
 
                 board, points = h.move_up(board)
 
-            if event.key == pg.K_s or event.key == pg.K_DOWN:
+            if event.key == pg.K_s or event.key == pg.K_DOWN and not lost:
                 c_board = copy.deepcopy(board)
 
                 board, points = h.move_down(board)
 
-            if event.key == pg.K_a or event.key == pg.K_LEFT:
+            if event.key == pg.K_a or event.key == pg.K_LEFT and not lost:
                 c_board = copy.deepcopy(board)
 
                 board, points = h.move_left(board)
 
-            if event.key == pg.K_d or event.key == pg.K_RIGHT:
+            if event.key == pg.K_d or event.key == pg.K_RIGHT and not lost:
                 c_board = copy.deepcopy(board)
 
                 board, points = h.move_right(board)
@@ -113,10 +142,16 @@ while True:
 
             if event.key == pg.K_r:
                 board, score = h.initial_state(), 0
+                lost = False
 
     width, height = screen.get_size()
+    if not lost:
+        lost = h.check_lost_state(board)
     screen.fill(bg_gray)
     restart_button = draw_board()
+    lost_button = None
+    if lost:
+        lost_button = lost_display()
 
     click, _, _ = pg.mouse.get_pressed()
     if click == 1:
@@ -124,6 +159,11 @@ while True:
         if restart_button.collidepoint(mouse):
             time.sleep(0.2)
             board, score = h.initial_state(), 0
+            lost = False
+        if lost and lost_button.collidepoint(mouse):
+            time.sleep(0.2)
+            board, score = h.initial_state(), 0
+            lost = False
 
     clock.tick(60)
     pg.display.flip()

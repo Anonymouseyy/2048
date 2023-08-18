@@ -1,3 +1,5 @@
+import copy
+
 import pygame as pg
 import random
 
@@ -183,3 +185,10 @@ def move_right(board):
             j -= 1
 
     return board, points
+
+
+def check_lost_state(board):
+    if any([not all(r) for r in board]):
+        return False
+
+    return move_up(board)[0] == board and move_down(board)[0] == board and move_left(board)[0] == board and move_right(board)[0] == board
