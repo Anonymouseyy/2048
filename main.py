@@ -37,6 +37,7 @@ moveFont.bold = True
 
 board = h.initial_state()
 lost = False
+transition = False
 
 
 def draw_board():
@@ -75,6 +76,10 @@ def draw_board():
     screen.blit(restart, restart_rect)
 
     return restart_button
+
+
+def transition_board(cur, targ, step=0):
+    pass
 
 
 def lost_display():
@@ -118,23 +123,23 @@ while True:
 
             if event.key == pg.K_w or event.key == pg.K_UP and not lost:
                 c_board = copy.deepcopy(board)
-
                 board, points = h.move_up(board)
+                transition = True
 
             if event.key == pg.K_s or event.key == pg.K_DOWN and not lost:
                 c_board = copy.deepcopy(board)
-
                 board, points = h.move_down(board)
+                transition = True
 
             if event.key == pg.K_a or event.key == pg.K_LEFT and not lost:
                 c_board = copy.deepcopy(board)
-
                 board, points = h.move_left(board)
+                transition = True
 
             if event.key == pg.K_d or event.key == pg.K_RIGHT and not lost:
                 c_board = copy.deepcopy(board)
-
                 board, points = h.move_right(board)
+                transition = True
 
             if c_board != board:
                 board = h.insert_random(board)
@@ -143,6 +148,7 @@ while True:
             if event.key == pg.K_r:
                 board, score = h.initial_state(), 0
                 lost = False
+                transition = True
 
     width, height = screen.get_size()
     lost = h.check_lost_state(copy.deepcopy(board))
