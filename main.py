@@ -40,10 +40,34 @@ lost = False
 transition = False
 
 
-def draw_board():
-    dim = min((5*width)/6, (5*height)/7)
+def other_ui():
+    dim = min((5 * width) / 6, (5 * height) / 7)
     board_back = pg.Rect(0, 0, dim, dim)
-    board_back.center = (width//2, height//2+(5*height)/70)
+    board_back.center = (width // 2, height // 2 + (5 * height) / 70)
+
+    score_back = pg.Rect(board_back.topleft[0], height / 20, dim / 3, height / 10)
+    pg.draw.rect(screen, board_color, score_back, border_radius=10)
+
+    score_text = moveFont.render(f'{score}', True, (34, 34, 34))
+    score_text_rect = score_text.get_rect()
+    score_text_rect.center = score_back.center
+    screen.blit(score_text, score_text_rect)
+
+    restart_button = pg.Rect(board_back.topright[0] - dim / 3, height / 20, dim / 3, height / 10)
+    restart = textFont.render("Restart", True, black)
+    restart_rect = restart.get_rect()
+    restart_rect.center = restart_button.center
+    pg.draw.rect(screen, (157, 143, 130) if restart_button.collidepoint(pg.mouse.get_pos()) else board_color,
+                 restart_button, border_radius=10)
+    screen.blit(restart, restart_rect)
+
+    return restart_button
+
+
+def draw_board():
+    dim = min((5 * width) / 6, (5 * height) / 7)
+    board_back = pg.Rect(0, 0, dim, dim)
+    board_back.center = (width // 2, height // 2 + (5 * height) / 70)
     pg.draw.rect(screen, board_color, board_back, border_radius=10)
 
     for row_num, row in enumerate(board):
@@ -60,23 +84,6 @@ def draw_board():
                 num_rect.center = spot_rect.center
                 screen.blit(num, num_rect)
 
-    score_back = pg.Rect(board_back.topleft[0], height/20, dim/3, height/10)
-    pg.draw.rect(screen, board_color, score_back, border_radius=10)
-
-    score_text = moveFont.render(f'{score}', True, (34, 34, 34))
-    score_text_rect = score_text.get_rect()
-    score_text_rect.center = score_back.center
-    screen.blit(score_text, score_text_rect)
-
-    restart_button = pg.Rect(board_back.topright[0]-dim/3, height/20, dim/3, height/10)
-    restart = textFont.render("Restart", True, black)
-    restart_rect = restart.get_rect()
-    restart_rect.center = restart_button.center
-    pg.draw.rect(screen, (157, 143, 130) if restart_button.collidepoint(pg.mouse.get_pos()) else board_color, restart_button, border_radius=10)
-    screen.blit(restart, restart_rect)
-
-    return restart_button
-
 
 def transition_board(cur, targ, step=0):
     pass
@@ -91,7 +98,6 @@ def lost_display():
 
     lost_back = pg.Rect(0, 0, dim / 2, height / 10)
     lost_back.center = (width // 2, height // 2)
-    lost_back.y += height / 8
     pg.draw.rect(screen, board_color, lost_back, border_radius=10)
 
     lost_text = textFont.render('Game Over', True, (34, 34, 34))
@@ -101,7 +107,7 @@ def lost_display():
 
     retry_button = pg.Rect(0, 0, dim / 2.5, height / 10)
     retry_button.center = lost_text_rect.center
-    retry_button.y -= height / 8
+    retry_button.y += height / 8
     retry = textFont.render("Try Again", True, black)
     retry_rect = retry.get_rect()
     retry_rect.center = retry_button.center
@@ -148,12 +154,13 @@ while True:
             if event.key == pg.K_r:
                 board, score = h.initial_state(), 0
                 lost = False
-                transition = True
+                transition = False
 
     width, height = screen.get_size()
     lost = h.check_lost_state(copy.deepcopy(board))
     screen.fill(bg_gray)
-    restart_button = draw_board()
+    draw_board()
+    restart_button = other_ui()
     lost_button = None
     if lost:
         lost_button = lost_display()
