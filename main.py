@@ -36,8 +36,10 @@ textFont = pg.font.Font("OpenSans-Regular.ttf", 40)
 moveFont.bold = True
 
 board = h.initial_state()
+c_board = h.initial_state()
 lost = False
-transition = False
+transition = 0
+transition_steps = 10
 
 
 def other_ui():
@@ -85,7 +87,7 @@ def draw_board():
                 screen.blit(num, num_rect)
 
 
-def transition_board(cur, targ, step=0):
+def transition_board(step):
     pass
 
 
@@ -123,43 +125,46 @@ while True:
         if event.type == pg.QUIT:
             sys.exit()
 
-        if event.type == pg.KEYDOWN:
-            c_board = board
+        if event.type == pg.KEYDOWN and not transition:
             points = None
 
             if event.key == pg.K_w or event.key == pg.K_UP and not lost:
                 c_board = copy.deepcopy(board)
                 board, points = h.move_up(board)
-                transition = True
 
             if event.key == pg.K_s or event.key == pg.K_DOWN and not lost:
                 c_board = copy.deepcopy(board)
                 board, points = h.move_down(board)
-                transition = True
 
             if event.key == pg.K_a or event.key == pg.K_LEFT and not lost:
                 c_board = copy.deepcopy(board)
                 board, points = h.move_left(board)
-                transition = True
 
             if event.key == pg.K_d or event.key == pg.K_RIGHT and not lost:
                 c_board = copy.deepcopy(board)
                 board, points = h.move_right(board)
-                transition = True
 
             if c_board != board:
+                transition = 1
                 board = h.insert_random(board)
                 score += points
 
             if event.key == pg.K_r:
                 board, score = h.initial_state(), 0
                 lost = False
-                transition = False
+                transition = 0
 
     width, height = screen.get_size()
     lost = h.check_lost_state(copy.deepcopy(board))
     screen.fill(bg_gray)
-    draw_board()
+
+    if transition and transition < transition_steps:
+        transition_board(transition)
+    elif transition == transition_steps:
+        transition = 0
+    else:
+        draw_board()
+
     restart_button = other_ui()
     lost_button = None
     if lost:
@@ -168,14 +173,17 @@ while True:
     click, _, _ = pg.mouse.get_pressed()
     if click == 1:
         mouse = pg.mouse.get_pos()
+
         if restart_button.collidepoint(mouse):
             time.sleep(0.2)
             board, score = h.initial_state(), 0
             lost = False
+            transition = 0
+
         if lost and lost_button.collidepoint(mouse):
             time.sleep(0.2)
             board, score = h.initial_state(), 0
-            lost = False
+            lost = transition = 0
 
     clock.tick(60)
     pg.display.flip()
