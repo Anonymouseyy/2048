@@ -88,7 +88,24 @@ def draw_board():
 
 
 def transition_board(step):
-    pass
+    dim = min((5 * width) / 6, (5 * height) / 7)
+    board_back = pg.Rect(0, 0, dim, dim)
+    board_back.center = (width // 2, height // 2 + (5 * height) / 70)
+    pg.draw.rect(screen, board_color, board_back, border_radius=10)
+
+    for row_num, row in enumerate(c_board):
+        for spot_num, spot in enumerate(row):
+            spot_rect = pg.Rect(0, 0, 0.23 * dim, 0.23 * dim)
+            spot_rect.topleft = (board_back.topleft[0] + (spot_num * (0.246 * dim) + (0.016 * dim)),
+                                 board_back.topleft[1] + (row_num * (0.246 * dim) + (0.016 * dim)))
+            tile_color = tile_colors[spot] if spot in tile_colors else (60, 58, 50)
+            pg.draw.rect(screen, tile_color, spot_rect, border_radius=5)
+
+            if spot:
+                num = moveFont.render(f'{spot}', True, (34, 34, 34) if spot == 2 or spot == 4 else (249, 246, 242))
+                num_rect = num.get_rect()
+                num_rect.center = spot_rect.center
+                screen.blit(num, num_rect)
 
 
 def lost_display():
@@ -160,8 +177,10 @@ while True:
 
     if transition and transition < transition_steps:
         transition_board(transition)
+        transition += 1
     elif transition == transition_steps:
         transition = 0
+        draw_board()
     else:
         draw_board()
 
