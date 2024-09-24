@@ -36,10 +36,8 @@ textFont = pg.font.Font("OpenSans-Regular.ttf", 40)
 moveFont.bold = True
 
 board = h.initial_state()
-c_board = h.initial_state()
+c_board = copy.deepcopy(board)
 lost = False
-transition = 0
-transition_steps = 10
 
 
 def other_ui():
@@ -87,27 +85,6 @@ def draw_board():
                 screen.blit(num, num_rect)
 
 
-def transition_board(step):
-    dim = min((5 * width) / 6, (5 * height) / 7)
-    board_back = pg.Rect(0, 0, dim, dim)
-    board_back.center = (width // 2, height // 2 + (5 * height) / 70)
-    pg.draw.rect(screen, board_color, board_back, border_radius=10)
-
-    for row_num, row in enumerate(c_board):
-        for spot_num, spot in enumerate(row):
-            spot_rect = pg.Rect(0, 0, 0.23 * dim, 0.23 * dim)
-            spot_rect.topleft = (board_back.topleft[0] + (spot_num * (0.246 * dim) + (0.016 * dim)),
-                                 board_back.topleft[1] + (row_num * (0.246 * dim) + (0.016 * dim)))
-            tile_color = tile_colors[spot] if spot in tile_colors else (60, 58, 50)
-            pg.draw.rect(screen, tile_color, spot_rect, border_radius=5)
-
-            if spot:
-                num = moveFont.render(f'{spot}', True, (34, 34, 34) if spot == 2 or spot == 4 else (249, 246, 242))
-                num_rect = num.get_rect()
-                num_rect.center = spot_rect.center
-                screen.blit(num, num_rect)
-
-
 def lost_display():
     dim = min((5 * width) / 6, (5 * height) / 7)
     overlay = pg.Surface((dim, dim))
@@ -142,7 +119,7 @@ while True:
         if event.type == pg.QUIT:
             sys.exit()
 
-        if event.type == pg.KEYDOWN and not transition:
+        if event.type == pg.KEYDOWN:
             points = None
 
             if event.key == pg.K_w or event.key == pg.K_UP and not lost:
@@ -161,13 +138,13 @@ while True:
                 c_board = copy.deepcopy(board)
                 board, points = h.move_right(board)
 
-            if c_board != board:
-                transition = 1
+            if c_board != board and points is not None:
                 board = h.insert_random(board)
                 score += points
 
             if event.key == pg.K_r:
                 board, score = h.initial_state(), 0
+                c_board = copy.deepcopy(board)
                 lost = False
                 transition = 0
 
@@ -175,14 +152,7 @@ while True:
     lost = h.check_lost_state(copy.deepcopy(board))
     screen.fill(bg_gray)
 
-    if transition and transition < transition_steps:
-        transition_board(transition)
-        transition += 1
-    elif transition == transition_steps:
-        transition = 0
-        draw_board()
-    else:
-        draw_board()
+    draw_board()
 
     restart_button = other_ui()
     lost_button = None
