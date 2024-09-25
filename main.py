@@ -2,6 +2,7 @@ import pygame as pg
 import sys, copy, time
 
 import helpers as h
+import ai
 
 pg.init()
 clock = pg.time.Clock()
@@ -38,6 +39,7 @@ moveFont.bold = True
 board = h.initial_state()
 c_board = copy.deepcopy(board)
 lost = False
+ai_mode = False
 
 
 def other_ui():
@@ -122,19 +124,19 @@ while True:
         if event.type == pg.KEYDOWN:
             points = None
 
-            if event.key == pg.K_w or event.key == pg.K_UP and not lost:
+            if event.key == pg.K_w or event.key == pg.K_UP and not lost and not ai_mode:
                 c_board = copy.deepcopy(board)
                 board, points = h.move_up(board)
 
-            if event.key == pg.K_s or event.key == pg.K_DOWN and not lost:
+            if event.key == pg.K_s or event.key == pg.K_DOWN and not lost and not ai_mode:
                 c_board = copy.deepcopy(board)
                 board, points = h.move_down(board)
 
-            if event.key == pg.K_a or event.key == pg.K_LEFT and not lost:
+            if event.key == pg.K_a or event.key == pg.K_LEFT and not lost and not ai_mode:
                 c_board = copy.deepcopy(board)
                 board, points = h.move_left(board)
 
-            if event.key == pg.K_d or event.key == pg.K_RIGHT and not lost:
+            if event.key == pg.K_d or event.key == pg.K_RIGHT and not lost and not ai_mode:
                 c_board = copy.deepcopy(board)
                 board, points = h.move_right(board)
 
@@ -147,6 +149,28 @@ while True:
                 c_board = copy.deepcopy(board)
                 lost = False
                 transition = 0
+
+            if event.key == pg.K_a:
+                ai_mode = not ai_mode
+
+    if ai_mode:
+        move = ai.find_best_move(board)
+        points = None
+
+        if move == "u":
+            board, points = h.move_up(board)
+
+        if move == "d":
+            board, points = h.move_down(board)
+
+        if move == "l":
+            board, points = h.move_left(board)
+
+        if move == "r":
+            board, points = h.move_right(board)
+
+        board = h.insert_random(board)
+        score += points
 
     width, height = screen.get_size()
     lost = h.check_lost_state(copy.deepcopy(board))
