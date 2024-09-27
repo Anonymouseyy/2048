@@ -155,20 +155,7 @@ while True:
 
     if ai_mode:
         move = ai.find_best_move(board)
-        points = None
-
-        if move == "u":
-            board, points = h.move_up(board)
-
-        if move == "d":
-            board, points = h.move_down(board)
-
-        if move == "l":
-            board, points = h.move_left(board)
-
-        if move == "r":
-            board, points = h.move_right(board)
-
+        board, points = move(board)
         board = h.insert_random(board)
         score += points
 
