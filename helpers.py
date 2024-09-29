@@ -22,13 +22,10 @@ def get_empty_spaces(board):
     return empty
 
 
-def insert_random(board, valids=None):
-    if valids is None:
-        valids = [2, 2, 2, 4]
-
+def insert_random(board):
     empty = get_empty_spaces(board)
     i, j = random.choice(empty)
-    board[i][j] = random.choice(valids)
+    board[i][j] = 2 if random.random() < 0.9 else 4
     return board
 
 
