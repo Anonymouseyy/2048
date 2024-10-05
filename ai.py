@@ -4,16 +4,54 @@ import helpers as h
 
 all_moves = [h.move_up, h.move_down, h.move_left, h.move_right]
 
+MERGE_BIAS = 1
+MONOTONICITY_BIAS = 1
+
+
+def num_merges(selection):
+    merges = 0
+    i = 0
+    while i < len(selection) - 1:
+        if selection[i] == selection[i + 1] and selection[i] != 0:
+            merges += 1
+            i += 2
+        else:
+            i += 1
+    return merges
+
+
+def monotonicity(selection):
+    mono = 0
+
+    for i in range(len(selection) - 1):
+        if selection[i] < selection[i+1]:
+            mono += 1
+
+    return mono
+
 
 def calculate_final_score(board):
-    pass
+    score = 0
+
+    for row in board:
+        score += MERGE_BIAS * num_merges(row)
+        score += MONOTONICITY_BIAS * monotonicity(row)
+
+    col_board = [[board[i][j] for j in range(len(board))] for i in range(len(board))]
+
+    for col in col_board:
+        score += MERGE_BIAS * num_merges(col)
+        score += MONOTONICITY_BIAS * monotonicity(col)
+
+    print(score)
+    return score
 
 
 def calculate_move_score(board, current_depth, max_depth):
     best_score = 0
 
     for move in all_moves:
-        new_board = move(board)
+        new_board = move(board)[0]
         if new_board != board:
             score = generate_score(new_board, current_depth+1, max_depth)
             best_score = max(best_score, score)
@@ -43,7 +81,7 @@ def generate_score(board, current_depth=0, max_depth=4):
 
 
 def simulate_move(board, move):
-    new_board = move(board)
+    new_board = move(board)[0]
 
     if new_board == board:
         return 0

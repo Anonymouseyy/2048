@@ -159,6 +159,8 @@ while True:
         board = h.insert_random(board)
         score += points
 
+        time.sleep(0.1)
+
     width, height = screen.get_size()
     lost = h.check_lost_state(copy.deepcopy(board))
     screen.fill(bg_gray)
