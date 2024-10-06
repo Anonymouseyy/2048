@@ -117,6 +117,8 @@ def lost_display():
 
 
 while True:
+    lost = h.check_lost_state(copy.deepcopy(board))
+
     for event in pg.event.get():
         if event.type == pg.QUIT:
             sys.exit()
@@ -150,19 +152,21 @@ while True:
                 lost = False
                 transition = 0
 
-            if event.key == pg.K_a:
+            if event.key == pg.K_p:
                 ai_mode = not ai_mode
 
-    if ai_mode:
+    if ai_mode and not lost:
         move = ai.find_best_move(board)
         board, points = move(board)
-        board = h.insert_random(board)
         score += points
+        lost = h.check_lost_state(copy.deepcopy(board))
 
-        time.sleep(0.1)
+        if not lost:
+            board = h.insert_random(board)
+
+        time.sleep(0.05)
 
     width, height = screen.get_size()
-    lost = h.check_lost_state(copy.deepcopy(board))
     screen.fill(bg_gray)
 
     draw_board()
