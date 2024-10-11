@@ -5,9 +5,10 @@ import helpers as h
 all_moves = [h.move_up, h.move_down, h.move_left, h.move_right]
 
 MERGE_BIAS = 4
-MERGE_SCORE_BIAS = 8
-MONOTONICITY_BIAS = 8
-CORNER_BIAS = 128
+MERGE_SCORE_BIAS = 2
+HORIZONTAL_MONOTONICITY_BIAS = 128
+VERTICAL_MONOTONICITY_BIAS = 32
+CORNER_BIAS = 1028
 
 
 def num_merges(selection):
@@ -35,6 +36,8 @@ def monotonicity(selection):
 
 
 def calculate_final_score(board):
+    # bias for like numbers next to each other
+    # bias for big numbers one off from each other in row in bottom
     score = 0
     merge_score = 0
 
@@ -42,7 +45,7 @@ def calculate_final_score(board):
         merges, score = num_merges(row)
         merge_score += score
         score += MERGE_BIAS * merges
-        score += MONOTONICITY_BIAS * monotonicity(row)
+        score += HORIZONTAL_MONOTONICITY_BIAS * monotonicity(row)
 
     col_board = [[board[i][j] for j in range(len(board))] for i in range(len(board))]
 
@@ -50,7 +53,7 @@ def calculate_final_score(board):
         merges, score = num_merges(col)
         merge_score += score
         score += MERGE_BIAS * merges
-        score += MONOTONICITY_BIAS * monotonicity(col)
+        score += VERTICAL_MONOTONICITY_BIAS * monotonicity(col)
 
     score += CORNER_BIAS * (1 if board[3][3] == max([item for row in board for item in row]) else 0)
     score += MERGE_SCORE_BIAS * merge_score
