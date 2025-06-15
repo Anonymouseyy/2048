@@ -155,6 +155,9 @@ while True:
             if event.key == pg.K_p:
                 ai_mode = not ai_mode
 
+            if event.key == pg.K_g:
+                print(board)
+
     if ai_mode and not lost:
         move = ai.find_best_move(board)
         board, points = move(board)
